@@ -1,0 +1,116 @@
+{
+  "name": "Website Chat Bridge - Resume & Interview Coach",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "careerpilot",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "e777e0e4-944b-41d8-98e5-bb130a5e4930",
+      "name": "Website Chat Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        16
+      ],
+      "webhookId": "70ed9606-3ed1-4fb1-92a8-4e3b71a26035"
+    },
+    {
+      "parameters": {
+        "agentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Sjjt5Xtt5U1mk6ql",
+          "cachedResultName": "Resume & Interview Coach"
+        },
+        "message": "={{ (() => { const b = $json.body || {}; if (b.message) return b.message; const parts = []; if (b.system) parts.push(b.system); if (b.role) parts.push('Target role: ' + b.role); if (b.text) parts.push(b.text); return parts.join('\\n\\n'); })() }}",
+        "advanced": {
+          "session": {
+            "session": {
+              "sessionIdType": "customKey",
+              "sessionKey": "={{ $json.body.sessionId || $json.body.source || \"careerpilot-web\" }}"
+            }
+          }
+        }
+      },
+      "id": "b3642c47-fa88-4a04-ba19-7bf3589cec6b",
+      "name": "Ask Resume Coach Agent",
+      "type": "n8n-nodes-base.messageAnAgent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ reply: ($json.text || $json.output), sessionId: $(\"Website Chat Webhook\").item.json.body.sessionId }) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "83a105af-1a7a-4039-9f99-46001c8452f6",
+      "name": "Return Reply",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        16
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Website Chat Webhook": {
+      "main": [
+        [
+          {
+            "node": "Ask Resume Coach Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask Resume Coach Agent": {
+      "main": [
+        [
+          {
+            "node": "Return Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "40155312-ed86-490e-8347-0264502b16e7",
+  "meta": {
+    "instanceId": "f24a24662581237f8f961f86a48fec05f3564c62b34bef19b27a00d27cefb11b"
+  },
+  "nodeGroups": [],
+  "id": "0w1sOM70rBfNcqK5",
+  "tags": []
+}
